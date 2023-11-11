@@ -68,7 +68,7 @@ def get_book_info(book_id):
 
 
 # connection between catalog and order server
-@app.route('/catalog/<int:book_id>', methods=['PUT'])
+@app.route('/update/<int:book_id>', methods=['PUT'])
 def get_book_info_and_update(book_id):
     conn = sqlite3.connect("mydatabase.db")
     cursor = conn.cursor()
