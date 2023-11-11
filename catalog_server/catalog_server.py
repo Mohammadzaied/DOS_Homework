@@ -59,7 +59,9 @@ def get_book_info(book_id):
                     "price": book[4]
                 }
     else:
-        response_data = None
+        response_data =  {
+                'status':'Book not found'
+                }
     
     return jsonify(response_data)
 
