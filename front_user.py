@@ -30,7 +30,7 @@ while True:
         elif user_input==3:
                 print('\nplease enter id:')
                 user_input=input().strip()
-                catalog_response = requests.put(f"{client_url}/purchase/{user_input}")
+                catalog_response = requests.get(f"{client_url}/purchase/{user_input}")
                 json_string = json.dumps(catalog_response.json() ,indent=4)
                 print("\n"+json_string)
 
