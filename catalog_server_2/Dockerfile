@@ -5,4 +5,4 @@ COPY ./requirements.txt /app/requirements.txt
 RUN pip install -r requirements.txt
 
 COPY . /app   
-CMD ["python", "./order_server.py"]
+CMD ["python", "./catalog_server2.py"]
