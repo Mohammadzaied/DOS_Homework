@@ -61,8 +61,7 @@ def search_books_from_list(topic):
 
 # delete books from cache when operation update        
 def delete_books_from_list(id):
-    result = []
-   
+    
     if id in [1 , 2 , 5 , 6]:
         # Remove books with IDs 1, 2, 5, 6 for the 'distributed systems' topic
         book_ids_to_remove = [1 , 2 , 5 , 6]

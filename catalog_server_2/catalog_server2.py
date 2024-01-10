@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import sqlite3
 
 import requests
@@ -17,7 +17,12 @@ def synchronize_data(book_id):
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM books WHERE id = ?", (book_id,))
     book = cursor.fetchone()
-    new_value=book[3]-1
+    action = request.json['action']
+    if action == 'add':
+        new_value = book[3] + 1  # Increment the quantity
+    elif action == 'sub':
+        new_value = book[3] - 1  # Decrement the quantity    
+    #new_value=book[3]-1
     cursor.execute("UPDATE books SET quantity = ? WHERE id = ?", (new_value , book_id))
     conn.commit()
     return 'None'
@@ -110,7 +115,8 @@ def get_book_info_and_update(book_id):
     #decrement quantity one and save
     new_value=book[3]-1
     cursor.execute("UPDATE books SET quantity = ? WHERE id = ?", (new_value , book_id))
-    response=requests.put(f"{catalog_server1}/synchronize/{book_id}")
+    data = {'action': 'sub'}
+    response=requests.put(f"{catalog_server1}/synchronize/{book_id}",json=data)
     conn.commit()
     response_data =  {
                 "status":"purchase successfully"
@@ -122,7 +128,7 @@ def get_book_info_and_update(book_id):
 # connection between catalog and order server
 @app.route('/update2/<int:book_id>', methods=['PUT'])
 def get_book_info_and_update2(book_id):
-    conn = sqlite3.connect("mydatabase1.db")  #catalog_server_1\
+    conn = sqlite3.connect("mydatabase2.db")  #catalog_server_2\
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM books WHERE id = ?", (book_id,))
     book = cursor.fetchone()
@@ -137,7 +143,8 @@ def get_book_info_and_update2(book_id):
     #increment quantity one and save
     new_value=book[3]+1
     cursor.execute("UPDATE books SET quantity = ? WHERE id = ?", (new_value , book_id))
-    response=requests.put(f"{catalog_server1}/synchronize/{book_id}")
+    data = {'action': 'add'}
+    response=requests.put(f"{catalog_server1}/synchronize/{book_id}",json=data)
     conn.commit()
     response_data =  {
                 "status":"add successfully"

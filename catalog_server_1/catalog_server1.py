@@ -1,11 +1,8 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import sqlite3
 import requests
-
 app = Flask(__name__)
 app.json.sort_keys = False
-
-
 catalog_server2='http://172.17.0.4:5101'
 
 # method   synchronize data between servers
@@ -15,13 +12,16 @@ def synchronize_data(book_id):
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM books WHERE id = ?", (book_id,))
     book = cursor.fetchone()
-    new_value=book[3]-1
+    action = request.json['action']
+    if action == 'add':
+        new_value = book[3] + 1  # Increment the quantity
+    elif action == 'sub':
+        new_value = book[3] - 1  # Decrement the quantity
+    #new_value=book[3]-1
     cursor.execute("UPDATE books SET quantity = ? WHERE id = ?", (new_value , book_id))
     conn.commit()
     return 'None'
     
-
-
 # method   search/topic
 @app.route('/search/<string:topic>', methods=['GET'])
 def search_book(topic):
@@ -110,7 +110,8 @@ def get_book_info_and_update(book_id):
     #decrement quantity one and save
     new_value=book[3]-1
     cursor.execute("UPDATE books SET quantity = ? WHERE id = ?", (new_value , book_id))
-    response=requests.put(f"{catalog_server2}/synchronize/{book_id}")
+    data = {'action': 'sub'}
+    response=requests.put(f"{catalog_server2}/synchronize/{book_id}",json=data)
     conn.commit()
     response_data =  {
                 "status":"purchase successfully"
@@ -135,9 +136,10 @@ def get_book_info_and_update2(book_id):
         return jsonify(response_data)
 
     #increment quantity one and save
-    new_value=book[3]+1
+    new_value=book[3]+ 1
     cursor.execute("UPDATE books SET quantity = ? WHERE id = ?", (new_value , book_id))
-    response=requests.put(f"{catalog_server2}/synchronize/{book_id}")
+    data = {'action': 'add'}
+    response=requests.put(f"{catalog_server2}/synchronize/{book_id}",json=data)
     conn.commit()
     response_data =  {
                 "status":"add successfully"

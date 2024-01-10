@@ -6,7 +6,8 @@ while True:
         print("1-Info.")
         print("2-Search.")
         print("3-Purchase.")
-        print("4-End.")
+        print("4-Add.")
+        print("5-End.")
         user_input = int(input())
         if user_input==1:
                 print('\nplease enter id:')
@@ -27,6 +28,12 @@ while True:
                 json_string = json.dumps(catalog_response.json() ,indent=4)
                 print("\n"+json_string)
         elif user_input==4:
+                print('\nplease enter id:')
+                user_input=input().strip()
+                catalog_response = requests.get(f"{client_url}/add/{user_input}")
+                json_string = json.dumps(catalog_response.json() ,indent=4)
+                print("\n"+json_string)
+        elif user_input==5:
             exit()
 
         else:   
